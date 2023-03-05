@@ -1,0 +1,50 @@
+{% extends 'blog/base.html' %}
+{% load ratings %}
+{% load comment_tags %}   
+  {% block custome.header %}
+  <link rel="stylesheet" type="text/css" href="red.css">
+  {% endblock %}
+
+  {% block title %}  -{{object.title}} {% endblock %}
+        {% block main %}
+           <!-- Page Header-->
+        <header class="masthead" style="background-image: url('{{object.thumbnail.url}}')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="site-heading">
+                            <h1>{{object.title}}</h1>
+                          {% if article.is_special %}
+                          <span class="label label-danger"style="font-size: 14px">ویژه</span>
+                          {% endif %}
+                            <time>{{object.jpublish}}</time>
+                            <div>{% ratings object %}</div>
+                            <div>بازدیدها :{{object.hits.count}}</div>
+                            <span class="subheading"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+ <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7 text.justify">
+                       {% if object.is_special%}
+                         {% if user.is_authenticated and user.is_special_user or user == object.author or user.is_superuser %}
+                          {{object.description|safe}}
+                        {% else %}
+                        {{article.description|striptags|truncatewords:30}}
+                        <p class="alert alert-warning">این مقاله ویژه است و  برای دیدن آن <a href="#" class="alert-link">اشتراک ویژه </a>تهیه بکنید</p>
+                        {% endif %}
+                        {% else %}
+                        {{object.description|safe}}
+                       {% endif %} 
+                       {% render_comments object request %}
+                       {% include_bootstrap %}
+                    </div>
+                </div>
+            </div>
+        </article>
+          {% endblock %}
